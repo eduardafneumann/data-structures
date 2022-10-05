@@ -11,10 +11,9 @@ struct lista_
     NO *inicio;
     NO *fim;
     int tamanho;
-}
+};
 
-LISTA *
-lista_criar()
+LISTA *lista_criar()
 {
     LISTA *lista = malloc(sizeof(LISTA));
     if (lista != NULL)
