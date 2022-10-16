@@ -1,20 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "item.h"
+#include "alocacao.h"
 
 struct item_{ 
    int chave;
 };
 
 ITEM *item_criar(int chave){
-   ITEM *item;
-
-   item = (ITEM *) malloc(sizeof(ITEM));
-
-   if (item != NULL){
-      item->chave = chave;
-      return(item);
-   }
+   ITEM *item = malloc(sizeof(ITEM)); verifica_alocacao(item);
+   item->chave = chave;
+   return(item);
    return(NULL);
 }
 
