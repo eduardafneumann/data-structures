@@ -1,5 +1,5 @@
-﻿all: main.o pilha.o item.o grafo.o vertice.o lista.o alocacao.o
-	gcc -o main main.o pilha.o item.o grafo.o vertice.o lista.o alocacao.o -O2
+﻿all: main.o pilha.o item.o grafo.o vertice.o lista.o solucao.o alocacao.o
+	gcc -o main main.o pilha.o item.o grafo.o vertice.o lista.o solucao.o alocacao.o -O2
 
 run: main
 	./main
@@ -21,6 +21,9 @@ vertice.o: vertice.c vertice.h alocacao.h
 
 lista.o: lista.c lista.h alocacao.h
 	gcc -c lista.c -O2
+
+solucao.o: solucao.c solucao.h pilha.h alocacao.h
+	gcc -c solucao.c -O2
 
 alocacao.o: alocacao.c alocacao.h
 	gcc -c alocacao.c -O2

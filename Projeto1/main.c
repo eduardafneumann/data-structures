@@ -37,20 +37,20 @@ void solve(INFO *info, int cidade, int dist)
                 // é menor que o menor ja achado
                 if (dist < solucao_get_dist(info->melhor_solucao))
                 {
-                    solucao_armazena(info->solucao, info->caminho_atual, dist);
+                    solucao_armazena(info->melhor_solucao, info->caminho_atual, dist);
                 }
             }
         }
         else
         {
-            if (!visitados[vizinha])
+            if (!info->visitados[vizinha])
             {
                 pilha_inserir(info->caminho_atual, item_criar(vizinha));
-                visitados[vizinha] = true;
+                info->visitados[vizinha] = true;
 
                 solve(info, vizinha, dist + peso_estrada);
 
-                visitados[vizinha] = false;
+                info->visitados[vizinha] = false;
                 pilha_remover(info->caminho_atual);
             }
         }
@@ -82,6 +82,7 @@ INFO *info_gerar(){
 
     // criando o grafo, melhor solução, vetor de visitados e pilha do caminho
     GRAFO *grafo = grafo_criar(n_cidades);
+    
     SOLUCAO *melhor_solucao = solucao_criar(n_cidades);
     bool *visitados = malloc(sizeof(bool)*n_cidades); verifica_alocacao(visitados);
     PILHA *caminho_atual = pilha_criar(n_cidades);
@@ -92,13 +93,15 @@ INFO *info_gerar(){
 
     // alocando e inicializando a info
     INFO *info = malloc(sizeof(INFO*));
-    info = {.grafo = grafo, .cidade_origem = cidade_origem, .visitados = visitados, .melhor_solucao = melhor_solucao, .caminho_atual = caminho_atual};
+    info->grafo = grafo; info->cidade_origem = cidade_origem; info->visitados = visitados; info->melhor_solucao = melhor_solucao; info->caminho_atual = caminho_atual;
+    return info;
+    grafo_tamanho(info->grafo);
 }
 
 void info_desalocar(INFO *info){
     grafo_apagar(info->grafo);
     free(info->visitados);
-    solucao_apagar(info->melhor_solucao)
+    solucao_apagar(info->melhor_solucao);
     pilha_apagar(info->caminho_atual);
     free(info);
 }
@@ -107,15 +110,18 @@ int main()
 {
     // criando info
     INFO *info = info_gerar();
+    grafo_tamanho(info->grafo);
 
     // resolvendo
-    solve(info, cidade_origem, 0);
+    solve(info, info->cidade_origem, 0);
 
     // imprimindo a solução
-    solucao_imprimir(cidade_origem);
+    //pilha_imprimir(solucao_get_cidades(info->melhor_solucao));
+    //if(pilha_vazia(solucao_get_cidades(info->melhor_solucao))) printf("AAAAAAA");
+    //solucao_imprimir(info->melhor_solucao, info->cidade_origem);
 
     // desalocando a memória
-    info_desalocar(info);
+    //info_desalocar(info);
     
     return 0;
 }

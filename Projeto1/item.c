@@ -39,8 +39,10 @@ bool item_set_chave(ITEM *item, int chave){
 }
 
 void item_imprimir(ITEM *item){
-   if (item != NULL)
+   if (item != NULL){
       printf("%d ", item->chave + 1);
+   }
+     
 }
 
 size_t item_size(){
