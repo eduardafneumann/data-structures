@@ -6,27 +6,19 @@
 #include "lista.h"
 #include "grafo.h"
 #include "pilha.h"
+#include "solucao.h"
 
-typedef struct caminho_
+typedef struct info_{
+    GRAFO *grafo;
+    int cidade_origem;
+    bool *visitados;
+    SOLUCAO *melhor_solucao;
+    PILHA *caminho_atual;
+} INFO;
+
+void solve(INFO *info, int cidade, int dist)
 {
-    int dist;
-    PILHA *cidades;
-} CAMINHO;
-
-CAMINHO menor_caminho = {.dist = INT_MAX, .cidades = NULL};
-
-bool *visitados = NULL;
-
-void armazena_pilha(PILHA *visitadas, int dist)
-{
-    pilha_apagar(menor_caminho.cidades);
-    menor_caminho.cidades = pilha_copia(visitadas);
-    menor_caminho.dist = dist;
-}
-
-void solve(int cidade_origem, GRAFO *grafo, PILHA *caminho, int cidade, int dist)
-{
-    LISTA *vizinhanca = grafo_get_lista(grafo, cidade);
+    LISTA *vizinhanca = grafo_get_lista(info->grafo, cidade);
     VERTICE *proxima_cidade;
     int peso_estrada, vizinha;
 
@@ -36,16 +28,16 @@ void solve(int cidade_origem, GRAFO *grafo, PILHA *caminho, int cidade, int dist
         peso_estrada = vertice_get_peso(proxima_cidade);
         vizinha = vertice_get_cidade(proxima_cidade);
 
-        if (vizinha == cidade_origem)
+        if (vizinha == info->cidade_origem)
         {
             // é um caminho valido
-            if (pilha_tamanho(caminho) == grafo_tamanho(grafo))
+            if (pilha_tamanho(info->caminho_atual) == grafo_tamanho(info->grafo))
             {
                 dist += peso_estrada;
                 // é menor que o menor ja achado
-                if (dist < menor_caminho.dist)
+                if (dist < solucao_get_dist(info->melhor_solucao))
                 {
-                    armazena_pilha(caminho, dist);
+                    solucao_armazena(info->solucao, info->caminho_atual, dist);
                 }
             }
         }
@@ -53,13 +45,13 @@ void solve(int cidade_origem, GRAFO *grafo, PILHA *caminho, int cidade, int dist
         {
             if (!visitados[vizinha])
             {
-                pilha_inserir(caminho, item_criar(vizinha));
+                pilha_inserir(info->caminho_atual, item_criar(vizinha));
                 visitados[vizinha] = true;
 
-                solve(cidade_origem, grafo, caminho, vizinha, dist + peso_estrada);
+                solve(info, vizinha, dist + peso_estrada);
 
                 visitados[vizinha] = false;
-                pilha_remover(caminho);
+                pilha_remover(info->caminho_atual);
             }
         }
         proxima_cidade = NULL;
@@ -80,43 +72,50 @@ void ler_grafo(GRAFO *grafo)
     }
 }
 
-void imprimir_resposta(int cidade_origem)
-{
-    pilha_imprimir(menor_caminho.cidades);
-    printf("%d\n", cidade_origem + 1);
-}
-
-int main()
-{
-    clock_t inicio, fim;
-    inicio = clock();
-
+INFO *info_gerar(){
+    // lendo input
     int n_cidades;
     scanf("%d", &n_cidades);
-
     int cidade_origem;
     scanf("%d", &cidade_origem);
     cidade_origem--;
 
+    // criando o grafo, melhor solução, vetor de visitados e pilha do caminho
     GRAFO *grafo = grafo_criar(n_cidades);
+    SOLUCAO *melhor_solucao = solucao_criar(n_cidades);
+    bool *visitados = malloc(sizeof(bool)*n_cidades); verifica_alocacao(visitados);
+    PILHA *caminho_atual = pilha_criar(n_cidades);
+    pilha_inserir(caminho_atual, item_criar(cidade_origem));
+
+    // lendo resto do input
     ler_grafo(grafo);
 
-    menor_caminho.cidades = pilha_criar(n_cidades);
-    visitados = malloc(sizeof(bool)*n_cidades); verifica_alocacao(visitados);
+    // alocando e inicializando a info
+    INFO *info = malloc(sizeof(INFO*));
+    info = {.grafo = grafo, .cidade_origem = cidade_origem, .visitados = visitados, .melhor_solucao = melhor_solucao, .caminho_atual = caminho_atual};
+}
 
-    PILHA *caminho = pilha_criar(n_cidades);
-    pilha_inserir(caminho, item_criar(cidade_origem));
+void info_desalocar(INFO *info){
+    grafo_apagar(info->grafo);
+    free(info->visitados);
+    solucao_apagar(info->melhor_solucao)
+    pilha_apagar(info->caminho_atual);
+    free(info);
+}
 
-    solve(cidade_origem, grafo, caminho, cidade_origem, 0);
+int main()
+{
+    // criando info
+    INFO *info = info_gerar();
 
-    imprimir_resposta(cidade_origem);
+    // resolvendo
+    solve(info, cidade_origem, 0);
+
+    // imprimindo a solução
+    solucao_imprimir(cidade_origem);
 
     // desalocando a memória
-    grafo_apagar(grafo);
-    pilha_apagar(caminho);
-    pilha_apagar(menor_caminho.cidades);
-
-    fim = clock();
-    printf("%lf\n", (double)(fim-inicio)/CLOCKS_PER_SEC); 
+    info_desalocar(info);
+    
     return 0;
 }
