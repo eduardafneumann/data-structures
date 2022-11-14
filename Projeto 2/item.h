@@ -13,3 +13,4 @@ bool item_set_chave(ITEM *item, int chave);
 int item_comparar(ITEM *item1, ITEM *item2);
 
 #endif
+

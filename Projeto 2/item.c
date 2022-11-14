@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include "item.h"
 
-struct item_{ 
+
+struct item_
+{ 
    int chave;
 };
 
@@ -21,7 +23,7 @@ ITEM *item_criar (int chave){
 bool item_apagar(ITEM **item){
    if (*item != NULL){
       free (*item);
-      *item = NULL; /*Boa pr�tica!*/
+      *item = NULL; /*Boa pratica!*/
       return(true);
    }
    return(false);
@@ -33,7 +35,6 @@ int item_get_chave(ITEM *item){
     exit(1);
 }
 
-
 bool item_set_chave(ITEM *item, int chave){
   if (item != NULL){
     item->chave = chave;
@@ -44,11 +45,11 @@ bool item_set_chave(ITEM *item, int chave){
 
 void item_imprimir(ITEM *item){
      if (item != NULL)
-        printf("\n-->item: %d\n", item->chave);
+        printf("[%d] ", item->chave);
 }
 
 int item_comparar(ITEM *item1, ITEM *item2){
-   if(item1->chave==item2->chave) return 0;
-   else if(item1->chave>item2->chave) return 1;
-   else return -1
+   if(item1->chave == item2->chave) return 0;
+   else if(item1->chave > item2->chave) return 1;
+   else return -1;
 }
