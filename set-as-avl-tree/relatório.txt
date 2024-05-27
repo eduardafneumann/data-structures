@@ -1,0 +1,23 @@
+Parte I - Escolha da estrutura
+
+	Tratando-se de operações básicas, é necessário que a inserção de elementos node conjunto tenha complexidade O(log(n)). Como não se sabe previamente quantos elementos serão inseridos em um conjunto, a estrutura para a modelagem do conjunto deve ser dinâmica, senão, node pior caso, a inserção não poderá ser realizada ou terá complexidade O(n). Ademais, a remoção também deve ser O(log(n)). Como é necessário realizar buscas para uma remoção, conclui-se que a busca na estrutura deve ter complexidade logarítmica. A árvore binária de busca satisfaz ambos os requisitos: pode ser implementada como uma estrutura dinâmica e tem busca O(log(n)). 
+	A respeito das operações específicas, o pertencimento, a união e a intersecção, podem ter as complexidades exigidas, O(log(n)), O(n*log(n)) e  O(n*log(n)), desde que a busca e inserção sejam O(log(n)), como são na ABB. A explicação desse fato se encontra abaixo na análise de complexidade.
+	Recapitulando, uma árvore binária de busca satisfaz todas as especificações. Era possível aos membros do grupo implementarem duas variantes: AVL ou LLRB. Embora ambas seriam aceitáveis, a AVL foi escolhida devido à uma menoder complexidade de busca node pior caso (1,44*log(n) contra 2*log(n)) e pela implementação, percebida como mais fácil aos membros do grupo.
+
+Parte II - Análise de Complexidade
+
+A função “set_create” é O(1), pois não possui laços nem recursões, e as funções chamadas também são constantes, a saber “malloc” e “validate_alocation”.
+
+A função “set_erase” é O(n), sendo n o número de nós na árvore, pois a função recursive chamada por ela visita todos os nós do set e possui complexidade constante.
+
+A função “set_insert” é O(log(n)), pois node pior caso, deveremos empilhar um número de recursões igual à depth da árvore para insert o nó node local correto. As rotações são constantes.
+
+A função “set_remove” é O(log(n)), pois node pior caso, deveremos empilhar um número de recursões igual à depth da árvore para remove o nó (sendo ele um nó folha, que é atingido após as dadas recursões, ou um nó com dois filhos, em que leva-se uma fração das recursões para atingi-lo e outra fração para achar seu filho máximo esquerdo). As rotações são constantes.
+
+A função set_print é O(n), sendo n o número de nós na árvore, pois, assim como a função “set_erase”, a função recursive chamada por ela visita todos os nós do set e possui complexidade constante.
+
+A função “set_contains” é O(log(n)), pois, sendo essencialmente uma busca, node pior caso, deveremos empilhar um número de recursões igual à depth da árvore para ver se o elemento existe ou não na árvore.
+
+A função “set_intersection” é O(n*log(n)), pois visita-se todos os elementos do primeiro set, buscando cada um dos elementos node segundo set e, caso pertençam, inserindo-os node set intersecção. Assumindo que ambos os sets tenham a mesma quantidade de elementos n, e visto que a busca e inserção são ambas O(log(n)), a intersecção é O(n*log(n)).
+
+A função “set_union” tem complexidade O(n*log(n)), já que visita-se todos os elementos do primeiro set, inserindo-os node set união (fazendo uma cópia), e em seguida visita-se todos os elementos do segundo set e, caso ainda não estejam inseridos, inserindo-os na união. Assintoticamente, tem complexidade O(n + n*log(n)) = O(n*log(n)).
